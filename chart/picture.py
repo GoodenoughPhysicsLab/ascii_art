@@ -1,6 +1,6 @@
 import os
 
-from typing import Union
+from typing import Union, Optional
 
 import cv2 as cv
 import numpy as np
@@ -8,7 +8,7 @@ import numpy as np
 def displayGrayPicture(img_path: Union[str, np.ndarray],
                        win_output: bool = False,
                        invert: bool = False,
-                       ):
+                       ) -> Optional[np.ndarray]:
     if isinstance(img_path, str) and not os.path.exists(img_path):
         raise FileNotFoundError
     if not isinstance(img_path, (str, np.ndarray)) or not isinstance(win_output, bool):
@@ -68,4 +68,9 @@ def displayColorPicture(img_path: Union[str, np.ndarray], win_output: bool = Fal
     if not isinstance(img_path, (str, np.ndarray)):
         raise TypeError
 
-    pass
+    if isinstance(img_path, str):
+        img = cv.imread(img_path)
+    else:
+        img = img_path
+
+    #
