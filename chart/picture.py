@@ -4,6 +4,7 @@ from typing import Union, Optional, Callable
 
 import cv2 as cv
 import numpy as np
+import chart_cpp
 
 ''' chr(0x0020): space
     chr(0x2591): 1/4 block
@@ -49,7 +50,7 @@ def displayGrayPicture(img_path: Union[str, np.ndarray],
         img = img_path
 
     if win_output:
-        grayConvert(img, 63.75)
+        chart_cpp.grayConvert(img, 63.75)
 
         cv.imshow("output", img)
         cv.waitKey(0)

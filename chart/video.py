@@ -3,6 +3,7 @@ import platform
 
 import cv2 as cv
 import chart.picture as picture
+import chart_cpp
 
 from typing import Callable, Optional
 
@@ -29,7 +30,7 @@ def displayGrayVideo(video_path: str, win_output: bool = False, invert: bool = F
                 if frame_callback is not None:
                     frame_callback(frame)
 
-                picture.grayConvert(frame, 63.75)
+                chart_cpp.grayConvert(frame, 63.75)
                 cv.imshow("video", frame)
                 if cv.waitKey(1) & 0xFF == ord('q'):
                     return
@@ -44,7 +45,7 @@ def displayGrayVideo(video_path: str, win_output: bool = False, invert: bool = F
                 cache: str = ""
                 frame = cv.resize(frame, (frame.shape[1], int(frame.shape[0] / 2)))
 
-                def callback(x: int, y: int, pixel: int):
+                def callback(x: int, _: int, pixel: int):
                     nonlocal cache
                     if x == 0:
                         cache += "\n"
@@ -52,7 +53,7 @@ def displayGrayVideo(video_path: str, win_output: bool = False, invert: bool = F
                         cache += picture.CHAR_PIXEL[pixel]
                     else:
                         cache += picture.CHAR_PIXEL[len(picture.CHAR_PIXEL) - 1 - pixel]
-                picture.grayConvert(frame, callback=callback)
+                chart_cpp.grayConvert(frame, 1, callback)
 
                 os.system(CLEAR)
                 print(cache)

@@ -1,4 +1,11 @@
 import setuptools
+import platform
+
+if platform.system() == "Windows":
+    extra_compile_args = ["/std:c++20"]
+else:
+    extra_compile_args = ["-std=c++20"]
+
 
 with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
@@ -21,4 +28,12 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.8',
+    ext_modules=[
+        setuptools.Extension(
+            name="chart_cpp",
+            language="c++",
+            sources=["chart_cpp/impl.cpp"],
+            extra_compile_args=extra_compile_args,
+        )
+    ]
 )
