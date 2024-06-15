@@ -1,4 +1,5 @@
 import os
+import time
 import platform
 
 import cv2 as cv
@@ -35,28 +36,23 @@ def displayGrayVideo(video_path: str, win_output: bool = False, invert: bool = F
                 if cv.waitKey(1) & 0xFF == ord('q'):
                     return
         else:
+            f, frame = video.read()
             while f:
-                f, frame = video.read()
                 frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
                 if frame_callback is not None:
                     frame_callback(frame)
 
-                cache: str = ""
                 frame = cv.resize(frame, (frame.shape[1], int(frame.shape[0] / 2)))
 
-                def callback(x: int, _: int, pixel: int):
-                    nonlocal cache
-                    if x == 0:
-                        cache += "\n"
-                    if invert:
-                        cache += picture.CHAR_PIXEL[pixel]
-                    else:
-                        cache += picture.CHAR_PIXEL[len(picture.CHAR_PIXEL) - 1 - pixel]
-                chart_cpp.grayConvert(frame, 1, callback)
-
                 os.system(CLEAR)
-                print(cache)
+                if invert:
+                    chart_cpp.print_char_art(frame, picture.CHAR_PIXEL)
+                else:
+                    chart_cpp.print_char_art(frame, picture.CHAR_PIXEL[::-1])
+                time.sleep(0.04)
+
+                f, frame = video.read()
     except KeyboardInterrupt:
         video.release()
         cv.destroyAllWindows()
