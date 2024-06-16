@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 
+#include "pybind11/pybind11.h"
 #include "pybind11/numpy.h"
 #include "pybind11/pytypes.h"
 
@@ -16,13 +17,13 @@ void grayConvert(py::array_t<uint8_t> img, double multiple = 1)
             if (pixel < 32) { // 255 / 8
                 img.mutable_at(y, x) = 0;
             } else if (pixel < 96) { // 255 / 8 * 3
-                img.mutable_at(y, x) = 1 * multiple;
+                img.mutable_at(y, x) = static_cast<uint8_t>(1 * multiple);
             } else if (pixel < 160) {
-                img.mutable_at(y, x) = 2 * multiple;
+                img.mutable_at(y, x) = static_cast<uint8_t>(2 * multiple);
             } else if (pixel < 224) {
-                img.mutable_at(y, x) = 3 * multiple;
+                img.mutable_at(y, x) = static_cast<uint8_t>(3 * multiple);
             } else {
-                img.mutable_at(y, x) = 4 * multiple;
+                img.mutable_at(y, x) = static_cast<uint8_t>(4 * multiple);
             }
         }
     }

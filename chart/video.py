@@ -6,16 +6,28 @@ import cv2 as cv
 import chart.picture as picture
 import chart_cpp
 
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
-def displayGrayVideo(video_path: str, win_output: bool = False, invert: bool = False, frame_callback: Optional[Callable] = None):
-    if not isinstance(video_path, str) or not isinstance(win_output, bool):
+def displayGrayVideo(video_path: Union[str, cv.VideoCapture],
+                     win_output: bool = False,
+                     invert: bool = False,
+                     frame_callback: Optional[Callable] = None,
+                     ) -> None:
+    if not isinstance(video_path, (str, cv.VideoCapture)) or not isinstance(win_output, bool):
         raise TypeError("video_path must be a string")
     if not os.path.exists(video_path):
         raise FileNotFoundError
 
-    video = cv.VideoCapture(video_path)
+    if isinstance(video_path, str):
+        video = cv.VideoCapture(video_path)
+    elif isinstance(video_path, cv.VideoCapture):
+        video = video_path
+
+    if not video.isOpened():
+        raise IOError
+
     f, frame = video.read()
+    sleep_time = 1 / video.get(cv.CAP_PROP_FPS) - 0.008
 
     if platform.system() == "Windows":
         CLEAR = "cls"
@@ -35,6 +47,7 @@ def displayGrayVideo(video_path: str, win_output: bool = False, invert: bool = F
                 cv.imshow("video", frame)
                 if cv.waitKey(1) & 0xFF == ord('q'):
                     return
+                time.sleep(sleep_time)
         else:
             f, frame = video.read()
             while f:
@@ -43,19 +56,34 @@ def displayGrayVideo(video_path: str, win_output: bool = False, invert: bool = F
                 if frame_callback is not None:
                     frame_callback(frame)
 
-                frame = cv.resize(frame, (frame.shape[1], int(frame.shape[0] / 2)))
-
                 os.system(CLEAR)
-                if invert:
-                    chart_cpp.print_char_art(frame, picture.CHAR_PIXEL)
-                else:
-                    chart_cpp.print_char_art(frame, picture.CHAR_PIXEL[::-1])
-                time.sleep(0.04)
+                picture.displayGrayPicture(frame, False, invert)
+                time.sleep(sleep_time)
 
                 f, frame = video.read()
     except KeyboardInterrupt:
         video.release()
         cv.destroyAllWindows()
 
-def displayColorVideo(video_path: str, win_output: bool = False):
-    pass
+def displayColorVideo(video_path: Union[str, cv.VideoCapture]):
+    if not isinstance(video_path, (str, cv.VideoCapture)):
+        raise TypeError
+    if isinstance(video_path, str) and not os.path.exists(video_path):
+        raise FileNotFoundError
+
+    if isinstance(video_path, str):
+        video = cv.VideoCapture(video_path)
+    elif isinstance(video_path, cv.VideoCapture):
+        video = video_path
+
+    f, frame = video.read()
+    sleep_time = 1 / video.get(cv.CAP_PROP_FPS) - 0.008
+    while f:
+        for i in range(3):
+            chart_cpp.grayConvert(frame[:,:,i], 63.75)
+
+        cv.imshow("video", frame)
+        if cv.waitKey(1) & 0xFF == ord('q'):
+            break
+        f, frame = video.read()
+        time.sleep(sleep_time)

@@ -1,6 +1,6 @@
 import os
 
-from typing import Union, Optional
+from typing import Union
 
 import cv2 as cv
 import numpy as np
@@ -17,7 +17,7 @@ CHAR_PIXEL = [chr(0x0020), chr(0x2591), chr(0x2592), chr(0x2593), chr(0x2588)]
 def displayGrayPicture(img_path: Union[str, np.ndarray],
                        win_output: bool = False,
                        invert: bool = False,
-                       ) -> Optional[np.ndarray]:
+                       ) -> None:
     if isinstance(img_path, str) and not os.path.exists(img_path):
         raise FileNotFoundError
     if not isinstance(img_path, (str, np.ndarray)) or not isinstance(win_output, bool):
@@ -41,7 +41,7 @@ def displayGrayPicture(img_path: Union[str, np.ndarray],
         else:
             chart_cpp.print_char_art(img, CHAR_PIXEL[::-1])
 
-def displayColorPicture(img_path: Union[str, np.ndarray], win_output: bool = False):
+def displayColorPicture(img_path: Union[str, np.ndarray]):
     if isinstance(img_path, str) and not os.path.exists(img_path):
         raise FileNotFoundError
     if not isinstance(img_path, (str, np.ndarray)):
@@ -52,4 +52,9 @@ def displayColorPicture(img_path: Union[str, np.ndarray], win_output: bool = Fal
     else:
         img = img_path
 
-    #
+    for i in range(3):
+        chart_cpp.grayConvert(img[:,:,i], 63.75)
+
+    cv.imshow("output", img)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
