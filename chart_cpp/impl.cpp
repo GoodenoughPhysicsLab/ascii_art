@@ -29,7 +29,7 @@ void grayConvert(py::array_t<uint8_t> img, double multiple = 1)
     }
 }
 
-void print_char_art(py::array_t<uint8_t> img, py::list CHAR_PIXEL)
+void print_char_art(py::array_t<uint8_t> img, py::list CHAR_PIXEL, bool clear = false)
 {
     ::std::string cache;
 
@@ -55,10 +55,18 @@ void print_char_art(py::array_t<uint8_t> img, py::list CHAR_PIXEL)
         cache += "\n";
     }
 
+    if (clear) {
+#if defined(_WIN32) || defined(_WIN64)
+        system("cls");
+#else
+        system("clear");
+#endif
+    }
+
     ::std::cout << cache << '\n';
 }
 
 PYBIND11_MODULE(chart_cpp, m) {
     m.def("grayConvert", grayConvert, py::arg("img"), py::arg("multiple") = 1);
-    m.def("print_char_art", print_char_art, py::arg("img"), py::arg("CHAR_PIXEL"));
+    m.def("print_char_art", print_char_art, py::arg("img"), py::arg("CHAR_PIXEL"), py::arg("clear") = false);
 }

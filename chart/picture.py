@@ -17,6 +17,7 @@ CHAR_PIXEL = [chr(0x0020), chr(0x2591), chr(0x2592), chr(0x2593), chr(0x2588)]
 def displayGrayPicture(img_path: Union[str, np.ndarray],
                        win_output: bool = False,
                        invert: bool = False,
+                       clear: bool = False
                        ) -> None:
     if isinstance(img_path, str) and not os.path.exists(img_path):
         raise FileNotFoundError
@@ -37,9 +38,9 @@ def displayGrayPicture(img_path: Union[str, np.ndarray],
     else:
         img = cv.resize(img, (img.shape[1], int(img.shape[0] / 2)))
         if invert:
-            chart_cpp.print_char_art(img, CHAR_PIXEL)
+            chart_cpp.print_char_art(img, CHAR_PIXEL, clear)
         else:
-            chart_cpp.print_char_art(img, CHAR_PIXEL[::-1])
+            chart_cpp.print_char_art(img, CHAR_PIXEL[::-1], clear)
 
 def displayColorPicture(img_path: Union[str, np.ndarray]):
     if isinstance(img_path, str) and not os.path.exists(img_path):

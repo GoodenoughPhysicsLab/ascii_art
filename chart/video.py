@@ -29,11 +29,6 @@ def displayGrayVideo(video_path: Union[str, cv.VideoCapture],
     f, frame = video.read()
     sleep_time = 1 / video.get(cv.CAP_PROP_FPS) - 0.008
 
-    if platform.system() == "Windows":
-        CLEAR = "cls"
-    else:
-        CLEAR = "clear"
-
     try:
         if win_output:
             while f:
@@ -56,9 +51,8 @@ def displayGrayVideo(video_path: Union[str, cv.VideoCapture],
                 if frame_callback is not None:
                     frame_callback(frame)
 
-                os.system(CLEAR)
-                picture.displayGrayPicture(frame, False, invert)
-                time.sleep(sleep_time)
+                picture.displayGrayPicture(frame, False, invert, True)
+                time.sleep(0.04)
 
                 f, frame = video.read()
     except KeyboardInterrupt:
